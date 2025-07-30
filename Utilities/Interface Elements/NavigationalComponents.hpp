@@ -9,7 +9,7 @@
 #include "CoordinateSystem.hpp"
 #include "StatisticalMethods.hpp"
 #include "InputControls.hpp"
-
+#include "InformationalComponents.hpp"
 
 
 
@@ -77,11 +77,12 @@ public:
 	void addButtonElement(Button* &_buttonElement); // Adds a button element to the table
 	void addToggleElement(Toggle* &_toggleElement); // Adds a toggle element to the table
 	void addTextFieldElement(TextField* &_textFieldElement); // Adds a text field element to the table
-	
+	void addTooltipElement(Tooltip* &_toolTipElement); // Adds a slider element to the table
 	
 	
 	/// Table Attributes and User Interaction
-	ofVec2f tableDimensions(); // Returns the dimensions of the table
+	ofVec2f tableElementsDimensions(); // Returns the dimensions of the table
+	void layoutElements(); // Method to dynamically adjust the layout of elements within tableRect
 	void setPosition(ofVec2f rectPos); // Sets the position of the table
 	void callbackUpdate(); // Continuously calls the callback function for all toggle elements
 	void draw(); // Draws the table on the screen
@@ -91,7 +92,6 @@ public:
 	void mousePressed(int x, int y, int button); // Handles the mouse pressed event
 	void mouseDragged(int x, int y, int button); // Handles the mouse dragged event
 	void mouseReleased(int x, int y, int button); // Handles the mouse released event
-	
 	
 	
 	/// Table Attributes
@@ -122,6 +122,7 @@ public:
 	std::vector<Button*> buttonElements; // The button elements in the table
 	std::vector<Toggle*> toggleElements; // The toggle elements in the table
 	std::vector<TextField*> textfieldElements; // The text field elements in the table
+	std::vector<Tooltip*> toolTipElements; // The tooltip elements in the table
 };
 
 
@@ -169,6 +170,7 @@ public:
 	
 	/// Table Management
 	void addTable(Table* &table); // Adds a table to the table manager
+	void adjustTableManagerDimensions(float newHeight); // Adjusts the dimensions of the table manager
 	void galaxyMode();  // Handles the galaxy mode. Whenever galaxy mode is entered(special case table where you are creating a galaxy), close all other tables, enter slowmo, and draw special case table in center of screen
 	
 	

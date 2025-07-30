@@ -62,10 +62,11 @@ void UserInterface::config(std::string simulatorTitle, std::string simulationMod
 		quadtreeVisualization->addToggleElement(visualizeQuadtreeCentresOfMass);
 		quadtreeVisualization->addToggleElement(visualizeQuadtreeNodeProperties);
 		quadtreeVisualization->addToggleElement(visualizeQuadtreeDiagram);
+		Tooltip *tooltip;
+		tooltip = new Tooltip("This is a tooltip message. It can be short or long depending on the message length. hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh", 100, 100);
+		quadtreeVisualization->addTooltipElement(tooltip);
 		
-		
-		
-		
+	
 		
 		Toggle *visualizeBodiesAngularOrientation = new Toggle("Visualize Body Angular Orientation", 375, 175, 20, 15, false, [&bodies, bodiesAccelerations]() {
 			VisualizeBodiesAngularOrientation(bodies, bodiesAccelerations);
@@ -356,5 +357,5 @@ void UserInterface::mouseReleased(int x, int y, int button)
 
 void UserInterface::windowResized(int w, int h)
 {
-	tableManager->setPosition(ofVec2f(0 + ofGetWidth() * 0.025, ofGetHeight() * 0.030));
+	//tableManager->setPosition(ofVec2f(0 + ofGetWidth() * 0.025, ofGetHeight() * 0.030));
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E03A8DF02C01DF31007672C8 /* InformationalComponents.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E03A8DEE2C01DF31007672C8 /* InformationalComponents.cpp */; };
 		E083D4372BEDAC9E001E611B /* Vects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E083D4352BEDAC9E001E611B /* Vects.cpp */; };
 		E083D43A2BEDACA7001E611B /* Geometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E083D4382BEDACA7001E611B /* Geometry.cpp */; };
 		E083D43D2BEDACB1001E611B /* CoordinateSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E083D43B2BEDACB1001E611B /* CoordinateSystem.cpp */; };
@@ -47,6 +48,10 @@
 /* Begin PBXFileReference section */
 		191CD6FA2847E21E0085CBB6 /* of.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = of.entitlements; sourceTree = "<group>"; };
 		191EF70929D778A400F35F26 /* openFrameworks */ = {isa = PBXFileReference; lastKnownFileType = folder; name = openFrameworks; path = ../../../libs/openFrameworks; sourceTree = SOURCE_ROOT; };
+		E03A8DEE2C01DF31007672C8 /* InformationalComponents.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = InformationalComponents.cpp; sourceTree = "<group>"; };
+		E03A8DEF2C01DF31007672C8 /* InformationalComponents.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = InformationalComponents.hpp; sourceTree = "<group>"; };
+		E081DD522C133FEE00964E78 /* PhysicsVisualizationUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicsVisualizationUtils.cpp; sourceTree = "<group>"; };
+		E081DD532C133FEE00964E78 /* PhysicsVisualizationUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = PhysicsVisualizationUtils.hpp; sourceTree = "<group>"; };
 		E083D4352BEDAC9E001E611B /* Vects.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Vects.cpp; sourceTree = "<group>"; };
 		E083D4362BEDAC9E001E611B /* Vects.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Vects.hpp; sourceTree = "<group>"; };
 		E083D4382BEDACA7001E611B /* Geometry.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Geometry.cpp; sourceTree = "<group>"; };
@@ -122,6 +127,8 @@
 			isa = PBXGroup;
 			children = (
 				E083D4632BEDB4F1001E611B /* VisualizationUtils.hpp */,
+				E081DD522C133FEE00964E78 /* PhysicsVisualizationUtils.cpp */,
+				E081DD532C133FEE00964E78 /* PhysicsVisualizationUtils.hpp */,
 			);
 			path = Rendering;
 			sourceTree = "<group>";
@@ -175,6 +182,8 @@
 				E083D4422BEDACC4001E611B /* InputControls.hpp */,
 				E083D4442BEDACCB001E611B /* NavigationalComponents.cpp */,
 				E083D4452BEDACCB001E611B /* NavigationalComponents.hpp */,
+				E03A8DEE2C01DF31007672C8 /* InformationalComponents.cpp */,
+				E03A8DEF2C01DF31007672C8 /* InformationalComponents.hpp */,
 			);
 			path = "Interface Elements";
 			sourceTree = "<group>";
@@ -314,6 +323,7 @@
 			files = (
 				E083D4612BEDAE19001E611B /* SimulationConfig.cpp in Sources */,
 				E083D4712BF28A76001E611B /* UserInterface.cpp in Sources */,
+				E03A8DF02C01DF31007672C8 /* InformationalComponents.cpp in Sources */,
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E083D43D2BEDACB1001E611B /* CoordinateSystem.cpp in Sources */,
 				E083D46E2BF28953001E611B /* NBodySimulators.cpp in Sources */,

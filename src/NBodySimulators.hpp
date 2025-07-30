@@ -159,22 +159,4 @@ static inline void ResetVec2D(Vec2D *&vec2d, int numVecs)
 
 
 
-static inline void ResetofVec2f(ofVec2f *&vec2d, int numVecs)
-{
-	if(!vec2d)
-	{
-		throw std::invalid_argument("vec3d is a null pointer in 'ResetVec3D'.");
-	}
-	
-	for(int i = 0; i < numVecs; i++)
-	{
-		vec2d[i].x = 0;
-		vec2d[i].y = 0;
-	}
-}
-
-
-
-
-
 

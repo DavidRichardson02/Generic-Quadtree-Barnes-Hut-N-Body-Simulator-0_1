@@ -28,6 +28,24 @@
 
 
 
+static inline void ResetofVec2f(ofVec2f *&vec2d, int numVecs)
+{
+	if(!vec2d)
+	{
+		throw std::invalid_argument("vec3d is a null pointer in 'ResetVec3D'.");
+	}
+	
+	for(int i = 0; i < numVecs; i++)
+	{
+		vec2d[i].x = 0;
+		vec2d[i].y = 0;
+	}
+}
+
+
+
+
+
 // ------------- Gravitational Computations -------------
 /**
  * ComputeAllForces: Calculate the net gravitational forces on all bodies.
@@ -119,7 +137,7 @@ static inline void IntegrateRK4Force(float dt, std::vector<Body*> &bodies, ofVec
  */
 //Helper functions to integrate forces into bodies
 static inline void ResetAccelerations(std::vector<Body*> &bodies);
-static inline void ComputePositionAtHalfTimeStep(float dt,std::vector<Body*> &bodies);  // Drift every body once before resetting acceleration
+static inline void ComputePositionAtHalfTimeStep(float dt,std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations);  // Drift every body once before resetting acceleration
 static inline void ComputeVelocityAndPosition(float dt, std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations);   //Kick-Drift-Kick Leap-Frog integration scheme
 
 
@@ -328,8 +346,8 @@ inline void IntegrateRK4Force(float dt, std::vector<Body*> &bodies, ofVec2f*& bo
 		ofVec2f k4x = dt * (bodies[i]->velocity + k3x);
 		
 		
-		bodies[i]->velocity = bodies[i]->velocity + (k1v + 2 * k2v + 2 * k3v + k4v) / 6;
-		bodies[i]->position = bodies[i]->position + (k1x + 2 * k2x + 2 * k3x + k4x) / 6;
+		bodies[i]->velocity = bodies[i]->velocity + (k1v + 2 * k2v + 2 * k3v + k4v) * (1/6);
+		bodies[i]->position = bodies[i]->position + (k1x + 2 * k2x + 2 * k3x + k4x) * (1/6);
 		
 		
 		//bodies[i]->kineticEnergy = 0.5 * bodies[i]->mass * bodies[i]->velocity.lengthSquared();
@@ -406,23 +424,26 @@ inline void ResetAccelerations(std::vector<Body*> &bodies)
 	}
 }
 
-inline void ComputePositionAtHalfTimeStep(float dt, std::vector<Body*> &bodies)
+
+// The first half of the leafprog integration, positions updated to full step, velocities to half
+inline void ComputePositionAtHalfTimeStep(float dt, std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations)
 {
+	//KDK Leap Frog
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
-		bodies[i]->position = bodies[i]->position + bodies[i]->velocity * (dt * 0.5);
+		bodies[i]->velocity += 0.5 * bodiesAccelerations[i] * (dt); // Kick
+		bodies[i]->position += bodies[i]->velocity * (dt); // Drift
 	}
 }
 
+
+// The second half of the LeapFrog, velocities updated from half-step to full-step
 inline void ComputeVelocityAndPosition(float dt, std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations)
 {
 	for (size_t i = 0; i < bodies.size(); i++)
 	{
 		//KDK Leap Frog
-		bodies[i]->velocity = bodies[i]->velocity + bodiesAccelerations[i] * (dt); // Kick
-		
-		bodies[i]->position = bodies[i]->position + bodies[i]->velocity * (dt * 0.5); // Drift
-																					  //bodies[i]->kineticEnergy = 0.5 * bodies[i]->mass * bodies[i]->velocity.lengthSquared();
+		bodies[i]->velocity += 0.5 * bodiesAccelerations[i] * (dt); // Kick
 	}
 }
 
@@ -452,4 +473,297 @@ static inline void ComputeSystemEnergy(std::vector<Body*> &bodies, float &system
 
 
 
+//
+/*
+ void ComputeRK4IntegrationStep(float dt, std::vector<Body*> &bodies, Quadtree* &rootNode, float G, float theta)
+ {
+ size_t n = bodies.size();
+ std::vector<ofVec2f> k1_v(n), k2_v(n), k3_v(n), k4_v(n);
+ std::vector<ofVec2f> k1_x(n), k2_x(n), k3_x(n), k4_x(n);
+ std::vector<ofVec2f> temp_positions(n), temp_velocities(n);
+ 
+ // Compute k1
+ for (size_t i = 0; i < n; i++) {
+ ofVec2f acc = ofVec2f(0, 0);
+ ComputeTreeForce(rootNode, bodies[i], acc, G, theta);
+ k1_v[i] = acc * dt;
+ k1_x[i] = bodies[i]->velocity * dt;
+ }
+ 
+ // Compute k2
+ for (size_t i = 0; i < n; i++) {
+ temp_positions[i] = bodies[i]->position + 0.5f * k1_x[i];
+ temp_velocities[i] = bodies[i]->velocity + 0.5f * k1_v[i];
+ }
+ for (size_t i = 0; i < n; i++) {
+ ofVec2f acc = ofVec2f(0, 0);
+ Body temp_body = *bodies[i];
+ temp_body.position = temp_positions[i];
+ temp_body.velocity = temp_velocities[i];
+ ComputeTreeForce(rootNode, &temp_body, acc, G, theta);
+ k2_v[i] = acc * dt;
+ k2_x[i] = temp_velocities[i] * dt;
+ }
+ 
+ // Compute k3
+ for (size_t i = 0; i < n; i++) {
+ temp_positions[i] = bodies[i]->position + 0.5f * k2_x[i];
+ temp_velocities[i] = bodies[i]->velocity + 0.5f * k2_v[i];
+ }
+ for (size_t i = 0; i < n; i++) {
+ ofVec2f acc = ofVec2f(0, 0);
+ Body temp_body = *bodies[i];
+ temp_body.position = temp_positions[i];
+ temp_body.velocity = temp_velocities[i];
+ ComputeTreeForce(rootNode, &temp_body, acc, G, theta);
+ k3_v[i] = acc * dt;
+ k3_x[i] = temp_velocities[i] * dt;
+ }
+ 
+ // Compute k4
+ for (size_t i = 0; i < n; i++) {
+ temp_positions[i] = bodies[i]->position + k3_x[i];
+ temp_velocities[i] = bodies[i]->velocity + k3_v[i];
+ }
+ for (size_t i = 0; i < n; i++) {
+ ofVec2f acc = ofVec2f(0, 0);
+ Body temp_body = *bodies[i];
+ temp_body.position = temp_positions[i];
+ temp_body.velocity = temp_velocities[i];
+ ComputeTreeForce(rootNode, &temp_body, acc, G, theta);
+ k4_v[i] = acc * dt;
+ k4_x[i] = temp_velocities[i] * dt;
+ }
+ 
+ // Update positions and velocities
+ for (size_t i = 0; i < n; i++) {
+ bodies[i]->position += (k1_x[i] + 2.0f * k2_x[i] + 2.0f * k3_x[i] + k4_x[i]) / 6.0f;
+ bodies[i]->velocity += (k1_v[i] + 2.0f * k2_v[i] + 2.0f * k3_v[i] + k4_v[i]) / 6.0f;
+ }
+ }
+ 
+ // */
 
+//
+/*
+inline void IntegrateRK4Fors(float dt, std::vector<Body*> &bodies, ofVec2f* &bodiesAccelerations, Quadtree* &rootNode, float G, float theta)
+{
+	size_t n = bodies.size();
+	std::vector<ofVec2f> k1_v(n), k2_v(n), k3_v(n), k4_v(n);
+	std::vector<ofVec2f> k1_x(n), k2_x(n), k3_x(n), k4_x(n);
+	std::vector<ofVec2f> temp_accelerations(n);
+	std::vector<Body*> temp_bodies(n);
+	
+	// Step 1: Compute k1
+	for (size_t i = 0; i < n; i++)
+	{
+		ComputeTreeForce(rootNode, bodies[i], bodiesAccelerations[i], G, theta);
+		k1_v[i] = bodiesAccelerations[i] * dt;
+		k1_x[i] = bodies[i]->velocity * dt;
+	}
+	
+	
+	
+	// Step 2: Compute k2
+	for (size_t i = 0; i < n; i++)
+	{
+		temp_bodies[i] = bodies[i];
+		temp_bodies[i]->position = bodies[i]->position + 0.5f * k1_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + 0.5f * k1_v[i];
+	}
+	for (size_t i = 0; i < n; i++)
+	{
+		ComputeTreeForce(rootNode, temp_bodies[i], bodiesAccelerations[i], G, theta);
+		k2_v[i] = bodiesAccelerations[i] * dt;
+		k2_x[i] = temp_bodies[i]->velocity * dt;
+	}
+	ResetofVec2f(bodiesAccelerations, n);
+	
+	
+	// Step 3: Compute k3
+	for (size_t i = 0; i < n; i++)
+	{
+		temp_bodies[i] = bodies[i];
+		temp_bodies[i]->position = bodies[i]->position + 0.5f * k2_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + 0.5f * k2_v[i];
+	}
+	for (size_t i = 0; i < n; i++)
+	{
+		ComputeTreeForce(rootNode, temp_bodies[i], bodiesAccelerations[i], G, theta);
+		k3_v[i] = bodiesAccelerations[i] * dt;
+		k3_x[i] = temp_bodies[i]->velocity * dt;
+	}
+	
+	
+	
+	// Step 4: Compute k4
+	for (size_t i = 0; i < n; i++)
+	{
+		temp_bodies[i] = bodies[i];
+		temp_bodies[i]->position = bodies[i]->position + k3_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + k3_v[i];
+	}
+	for (size_t i = 0; i < n; i++)
+	{
+		ComputeTreeForce(rootNode, temp_bodies[i], bodiesAccelerations[i], G, theta);
+		k4_v[i] = bodiesAccelerations[i] * dt;
+		k4_x[i] = temp_bodies[i]->velocity * dt;
+	}
+	
+	// Step 5: Update positions and velocities
+	for (size_t i = 0; i < n; i++)
+	{
+		bodies[i]->velocity += (k1_v[i] + 2.0f * k2_v[i] + 2.0f * k3_v[i] + k4_v[i]) / 6.0f;
+		bodies[i]->position += (k1_x[i] + 2.0f * k2_x[i] + 2.0f * k3_x[i] + k4_x[i]) / 6.0f;
+	}
+}
+//*/
+inline void IntegrateRK4Fors(float dt, std::vector<Body*> &bodies, ofVec2f* &bodiesAccelerations, Quadtree* &rootNode, float G, float theta)
+{
+	size_t n = bodies.size();
+	std::vector<ofVec2f> k1_v(n), k2_v(n), k3_v(n), k4_v(n);
+	std::vector<ofVec2f> k1_x(n), k2_x(n), k3_x(n), k4_x(n);
+	std::vector<ofVec2f> temp_accelerations(n);
+	
+	std::vector<Body*> temp_bodies(n);
+	for (size_t i = 0; i < n; i++)
+	{
+		temp_bodies[i] = new Body(*bodies[i]); // Dynamically allocate new Body objects
+	}
+	
+	for (size_t i = 0; i < n; i++)
+	{
+		// Step 1: Compute k1
+		ComputeTreeForce(rootNode, bodies[i], bodiesAccelerations[i], G, theta);
+		k1_v[i] = bodiesAccelerations[i] * dt;
+		k1_x[i] = bodies[i]->velocity * dt;
+		
+		// Step 2: Compute k2
+		temp_bodies[i]->position = bodies[i]->position + 0.5f * k1_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + 0.5f * k1_v[i];
+		ComputeTreeForce(rootNode, temp_bodies[i], temp_accelerations[i], G, theta);
+		k2_v[i] = temp_accelerations[i] * dt;
+		k2_x[i] = temp_bodies[i]->velocity * dt;
+		
+		// Step 3: Compute k3
+		temp_bodies[i]->position = bodies[i]->position + 0.5f * k2_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + 0.5f * k2_v[i];
+		ComputeTreeForce(rootNode, temp_bodies[i], temp_accelerations[i], G, theta);
+		k3_v[i] = temp_accelerations[i] * dt;
+		k3_x[i] = temp_bodies[i]->velocity * dt;
+		
+		// Step 4: Compute k4
+		temp_bodies[i]->position = bodies[i]->position + k3_x[i];
+		temp_bodies[i]->velocity = bodies[i]->velocity + k3_v[i];
+		ComputeTreeForce(rootNode, temp_bodies[i], temp_accelerations[i], G, theta);
+		k4_v[i] = temp_accelerations[i] * dt;
+		k4_x[i] = temp_bodies[i]->velocity * dt;
+		
+		// Step 5: Update positions and velocities
+		bodies[i]->velocity += (k1_v[i] + 2.0f * k2_v[i] + 2.0f * k3_v[i] + k4_v[i]) / 6.0f;
+		bodies[i]->position += (k1_x[i] + 2.0f * k2_x[i] + 2.0f * k3_x[i] + k4_x[i]) / 6.0f;
+	}
+	
+	for (size_t i = 0; i < n; i++)
+	{
+		delete temp_bodies[i]; // Clean up dynamically allocated Body objects
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Define the RK4 integration step for updating positions and velocities
+static inline void RK4Step(float dt, std::vector<Body*> &bodies, ofVec2f* &bodiesAccelerations, float G, float theta, Quadtree* &rootNode)
+{
+	size_t n = bodies.size();
+	
+	// Temporary storage for intermediate steps
+	std::vector<ofVec2f> k1Pos(n), k1Vel(n);
+	std::vector<ofVec2f> k2Pos(n), k2Vel(n);
+	std::vector<ofVec2f> k3Pos(n), k3Vel(n);
+	std::vector<ofVec2f> k4Pos(n), k4Vel(n);
+	std::vector<ofVec2f> tmpPos(n), tmpVel(n);
+	
+	// Compute k1
+	ComputeAllForces(rootNode, bodies, bodiesAccelerations, G, theta);
+	for (size_t i = 0; i < n; i++)
+	{
+		k1Pos[i] = bodies[i]->velocity;
+		k1Vel[i] = bodiesAccelerations[i];
+	}
+	
+	// Compute k2
+	for (size_t i = 0; i < n; i++)
+	{
+		tmpPos[i] = bodies[i]->position + k1Pos[i] * (dt / 2.0);
+		tmpVel[i] = bodies[i]->velocity + k1Vel[i] * (dt / 2.0);
+	}
+	ComputeAllForces(rootNode, bodies, bodiesAccelerations, G, theta); // Update forces at the midpoint
+	for (size_t i = 0; i < n; i++)
+	{
+		k2Pos[i] = tmpVel[i];
+		k2Vel[i] = bodiesAccelerations[i];
+	}
+	
+	// Compute k3
+	for (size_t i = 0; i < n; i++)
+	{
+		tmpPos[i] = bodies[i]->position + k2Pos[i] * (dt / 2.0);
+		tmpVel[i] = bodies[i]->velocity + k2Vel[i] * (dt / 2.0);
+	}
+	ComputeAllForces(rootNode, bodies, bodiesAccelerations, G, theta); // Update forces at the midpoint
+	for (size_t i = 0; i < n; i++)
+	{
+		k3Pos[i] = tmpVel[i];
+		k3Vel[i] = bodiesAccelerations[i];
+	}
+	
+	// Compute k4
+	for (size_t i = 0; i < n; i++)
+	{
+		tmpPos[i] = bodies[i]->position + k3Pos[i] * dt;
+		tmpVel[i] = bodies[i]->velocity + k3Vel[i] * dt;
+	}
+	ComputeAllForces(rootNode, bodies, bodiesAccelerations, G, theta); // Update forces at the next step
+	for (size_t i = 0; i < n; i++)
+	{
+		k4Pos[i] = tmpVel[i];
+		k4Vel[i] = bodiesAccelerations[i];
+	}
+	
+	// Update positions and velocities
+	for (size_t i = 0; i < n; i++)
+	{
+		bodies[i]->position = bodies[i]->position + (k1Pos[i] + 2.0 * k2Pos[i] + 2.0 * k3Pos[i] + k4Pos[i]) * (dt / 6.0);
+		bodies[i]->velocity = bodies[i]->velocity + (k1Vel[i] + 2.0 * k2Vel[i] + 2.0 * k3Vel[i] + k4Vel[i]) * (dt / 6.0);
+	}
+}
+
+// Main integration loop
+static inline void IntegrateRK4(float dt, std::vector<Body*> &bodies, float G, float theta, Quadtree* &rootNode)
+{
+	// Allocate storage for accelerations
+	ofVec2f* bodiesAccelerations = new ofVec2f[bodies.size()];
+	
+	// Perform the RK4 integration step
+	RK4Step(dt, bodies, bodiesAccelerations, G, theta, rootNode);
+	
+	// Clean up
+	delete[] bodiesAccelerations;
+}

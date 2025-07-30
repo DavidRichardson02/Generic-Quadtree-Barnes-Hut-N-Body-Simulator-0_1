@@ -253,8 +253,7 @@ static inline void PrepareRelativePotentialEnergyField(std::vector<Body*>& bodie
 	
 	
 	
-	
-	
+
 	VisualizeRelativePotentialEnergyField(potentialGrid, bodies, G, minPotential, maxPotential, vectorGrid); // Call the function to visualize the relative potential energy field
 }
 

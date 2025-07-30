@@ -17,7 +17,7 @@ const float epsilon = 50; // softening parameer in force calculations, (usualy <
 
 
 
-
+ 
 /*
  * Body Class: the n-bodies in the n-body simulation
  *

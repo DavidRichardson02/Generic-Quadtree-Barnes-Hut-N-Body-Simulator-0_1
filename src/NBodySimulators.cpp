@@ -54,24 +54,24 @@ void BarnesHutSimulation::config(std::string simulatorTitle, std::string simulat
 	//if(simulationConfigure.userInterface.switchIntegrationMethod) {ComputePositionAtHalfTimeStep(dt, bodies);}  //only do halftimestep for LeapFrog KDK integration scheme
 	
 	
-	
 	TestBuildQuadtree(rootQuadtree,  bodies, simulationConfigure.bodyPool);
 	
 	
 	//ofVec2f* bodiesAccelerations;
 	bodiesAccelerations = new ofVec2f[bodies.size()];
-	
+	//ResetofVec2f(bodiesAccelerations, bodies.size());
 	
 	
 	ComputeAllForces(rootQuadtree,  bodies, bodiesAccelerations, G, theta);
 	//IntegrationScheme(dt, bodies, bodiesAccelerations, simulationConfigure.userInterface.switchIntegrationMethod->isOn, simulationConfigure.userInterface.slowMotionMode->isOn, simulationConfigure.userInterface.fastMotionMode->isOn);
-	IntegrateRK4Force(dt, bodies, bodiesAccelerations);
-	
+	//IntegrateRK4Force(dt, bodies, bodiesAccelerations);
+	//IntegrateRK4Fors(dt, bodies, bodiesAccelerations, rootQuadtree, G, theta);
+	ComputeVelocityAndPosition(dt, bodies, bodiesAccelerations); //do LeapFrog KDK
 	
 	ComputeSystemEnergy(bodies, systemEnergy, systemKineticEnergy, systemPotentialEnergy);
 	
 	
-	ResetAccelerations(bodies);
+	//ResetAccelerations(bodies);
 	//delete[] bodiesAccelerations;
 	
 	cout<<"\n\n Setup Complete ofGetElapsedTimef(): " << ofGetElapsedTimef();
@@ -79,7 +79,7 @@ void BarnesHutSimulation::config(std::string simulatorTitle, std::string simulat
 	//rootQuadtree->printTree();
 	
 	
-	RectangularGridDragSelection vectorGrid("Test grid", (ofGetWidth() * 0.5 - 1250), (ofGetHeight() * 0.5 - 1250), 2500, 2500);
+	RectangularGridDragSelection vectorGrid("Test grid", (ofGetWidth() * 0.5 - 1250), (ofGetHeight() * 0.5 - 1250), 5, 2500);
 	simulationConfigure.config(simulatorTitle, simulationMode, rootQuadtree, bodies, bodiesAccelerations, vectorGrid, theta, G, e, dt);
 	
 }
@@ -121,7 +121,7 @@ void BarnesHutSimulation::setup()
 	
 	
 	
-	ResetAccelerations(bodies);
+	//ResetAccelerations(bodies);
 	//if(simulationConfigure.userInterface.switchIntegrationMethod) {ComputePositionAtHalfTimeStep(dt, bodies);}  //only do halftimestep for LeapFrog KDK integration scheme
 	
 	
@@ -135,8 +135,9 @@ void BarnesHutSimulation::setup()
 	
 	ComputeAllForces(rootQuadtree,  bodies, bodiesAccelerations, G, theta);
 	//IntegrationScheme(dt, bodies, bodiesAccelerations, simulationConfigure.userInterface.switchIntegrationMethod->isOn, simulationConfigure.userInterface.slowMotionMode->isOn, simulationConfigure.userInterface.fastMotionMode->isOn);
-	IntegrateRK4Force(dt, bodies, bodiesAccelerations);
-	
+	//IntegrateRK4Force(dt, bodies, bodiesAccelerations);
+	//IntegrateRK4Fors(dt, bodies, bodiesAccelerations, rootQuadtree, G, theta);
+	ComputeVelocityAndPosition(dt, bodies, bodiesAccelerations); //do LeapFrog KDK
 	
 	ComputeSystemEnergy(bodies, systemEnergy, systemKineticEnergy, systemPotentialEnergy);
 	
@@ -169,30 +170,23 @@ void BarnesHutSimulation::draw()
 	//ResetAccelerations(bodies);
 	//if(simulationConfigure.userInterface.switchIntegrationMethod) {ComputePositionAtHalfTimeStep(dt, bodies);}  //only do halftimestep for LeapFrog KDK integration scheme
 	
-	
+	ComputePositionAtHalfTimeStep(dt, bodies, bodiesAccelerations);
 	BuildQuadtree(rootQuadtree,  bodies, simulationConfigure.bodyPool);
+	ResetofVec2f(bodiesAccelerations, bodies.size());
 	
 	
-	
-	//bodiesAccelerations = new ofVec2f[bodies.size()];
-	//for (int i = 0; i < bodies.size(); i++)
-	//{
-	//	bodiesAccelerations[i] = {0,0};
-	//}
 	
 	
 	ComputeAllForces(rootQuadtree,  bodies, bodiesAccelerations, G, theta);
 	//IntegrationScheme(dt, bodies, bodiesAccelerations, simulationConfigure.userInterface.switchIntegrationMethod->isOn, simulationConfigure.userInterface.slowMotionMode->isOn, simulationConfigure.userInterface.fastMotionMode->isOn);
-	IntegrateRK4Force(dt, bodies, bodiesAccelerations);
+	//IntegrateRK4Force(dt, bodies, bodiesAccelerations);
+	//IntegrateRK4Fors(dt, bodies, bodiesAccelerations, rootQuadtree, G, theta);
+	ComputeVelocityAndPosition(dt, bodies, bodiesAccelerations); //do LeapFrog KDK
+	
 	
 	ComputeSystemEnergy(bodies, systemEnergy, systemKineticEnergy, systemPotentialEnergy);
 	
 	simulationConfigure.draw(rootQuadtree, bodies, bodiesAccelerations, G, dt, systemEnergy, systemKineticEnergy, systemPotentialEnergy);
-	
-	
-	
-	ResetofVec2f(bodiesAccelerations, bodies.size());
-	//delete[] bodiesAccelerations;
 	
 	
 	

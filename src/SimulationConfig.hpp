@@ -272,13 +272,13 @@ static inline void BeginSimulation(SimulationConfig &simulationConfigure, std::v
 	}
 	else if(initialConditionsMode == 5)
 	{
-		bodies = PlummerModelInitialConditions(2500, 10, simulationConfigure.bodyPool, 187500, 1, 5000, ofVec2f(ofGetWidth() * 0.5, ofGetHeight() * 0.5));
+		bodies = PlummerModelInitialConditions(1250, 2, simulationConfigure.bodyPool, 187500*0.5, 1, 5000*0.5, ofVec2f(ofGetWidth() * 0.5, ofGetHeight() * 0.5));
 	}
 	else
 	{
 		throw std::runtime_error("Initial Conditions Mode index is out of bounds");
 	}
-	
+
 	
 	
 }

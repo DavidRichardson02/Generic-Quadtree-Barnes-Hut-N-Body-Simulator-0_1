@@ -32,7 +32,7 @@
 
 #include "InputControls.hpp"
 #include "NavigationalComponents.hpp"
-
+#include "InformationalComponents.hpp"
 
 
 

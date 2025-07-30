@@ -156,7 +156,6 @@ public:
 
 
 
-
 /**
  * Tab class representing a GUI tab.
  *
@@ -167,33 +166,35 @@ public:
 class Tab
 {
 public:
-	/// @section Constructors
-	Tab(); // Default constructor that initializes a tab with no label, default position, size, and state
-	Tab(std::string _label, float _x, float _y, float _w, float _h, bool _isPressed); // Constructor that initializes a tab with a label, specific position, size, and state
-	Tab(std::string _label, float _x, float _y, float _w, float _h, bool _isPressed, std::function<void()> callback);
-	//Tab(std::string _label, float _x, float _y, float _w, float _h, bool _isPressed, TabClickCallback callback);
-	
-	
-	/// @section Setters
-	void setPosition(ofVec2f rectPos); // Sets the position of the tab
-	void set(ofVec2f rectPos, ofVec2f rectSize); // Sets the position and size of the tab
-	
-	
-	
-	/// @section User Interaction
-	void draw(); // Draws the tab on the screen
-	void mousePressed(int x, int y, int button); // Handles the mouse pressed event
+	///=== Constructors
+	Tab(); // Instantiates a tab with default labeling and geometry
+	Tab(std::string _label, float _x, float _y, float _w, float _h, bool _isPressed); // Instantiates a labeled tab with defined dimensions and state
+	Tab(std::string _label, float _x, float _y, float _w, float _h, bool _isPressed, std::function<void()> callback); // Instantiates a labeled tab with a callback, dimensions, and state
 	
 	
 	
 	
-	/// @section Tab Attributes
+	
+	///=== Setters
+	void setPosition(ofVec2f rectPos); // Updates the tab's positional coordinates
+	void set(ofVec2f rectPos, ofVec2f rectSize); // Configures both tab position and dimensions
+	
+	
+	
+	
+	
+	///=== User Interaction
+	void draw(); // Renders the tab onto the screen
+	void mousePressed(int x, int y, int button); // Detects and processes mouse press events over the tab
+	
+	
+	
+	
+	
+	///=== Tab Attributes
 	ofRectangle rect; // Represents the size and position of the tab
-	bool isPressed; // Represents the state of the tab (pressed/unpressed)
-	std::string label; // The label displayed on the tab
-	std::function<void()> onClick; // Callback function for click events
-								   //TabClickCallback onClickCallback; // Function pointer for the click callback
+	bool isPressed;   // Indicates the current pressed/unpressed state of the tab
+	std::string label; // The text label shown on the tab
+	std::function<void()> onClick; // Callback function triggered upon a click event
+								   //TabClickCallback onClickCallback; // Function pointer for an alternative click callback
 };
-
-
-

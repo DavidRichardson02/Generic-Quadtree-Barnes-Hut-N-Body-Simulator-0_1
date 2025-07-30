@@ -304,3 +304,83 @@ void BodyData:: draw(bool colorMode, const Body body)
 	ofDrawLine(body.position, body.position + orientationVector);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * fourth-order runge-kutta, a fourth order method, generally offers greater accuracy
+ * per time step at the cost of increased computational complexity. It approximates
+ * the solution by taking a weighted average of four different approximations at each
+ * time step, however this method does not preserve time symmetry, so errors in the
+ * total energy of the system will increase without bound over time.
+ */
+inline void IntegrateRK4Force(float dt, std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations)
+{
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		ofVec2f k1v = dt * bodiesAccelerations[i];
+		
+		ofVec2f k1x = dt * bodies[i]->velocity;
+		
+		ofVec2f k2v = dt * (bodiesAccelerations[i] + 0.5 * k1v);
+		ofVec2f k2x = dt * (bodies[i]->velocity + 0.5 * k1x);
+		
+		ofVec2f k3v = dt * (bodiesAccelerations[i] + 0.5 * k2v);
+		ofVec2f k3x = dt * (bodies[i]->velocity + 0.5 * k2x);
+		
+		ofVec2f k4v = dt * (bodiesAccelerations[i] + k3v);
+		ofVec2f k4x = dt * (bodies[i]->velocity + k3x);
+		
+		
+		bodies[i]->velocity = bodies[i]->velocity + (k1v + 2 * k2v + 2 * k3v + k4v) / 6;
+		bodies[i]->position = bodies[i]->position + (k1x + 2 * k2x + 2 * k3x + k4x) / 6;
+	}
+}
+
+
+
+
+
+inline void ResetAccelerations(std::vector<Body*> &bodies)
+{
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		//bodies[i]->acceleration.set(0, 0);
+	}
+}
+/**
+ * LeapFrog KDK, a second order method that handles position ('Drift') and velocity ('Kick')
+ * updates in a staggered manner, making it time-reversible which prevents systematic
+ * build-up in error in the total energy of the system over time. This is crucial for
+ * long-term simulations where errors might accumulate. slightly less accurate and
+ * significantly cheaper than RK4
+ */
+inline void ComputePositionAtHalfTimeStep(float dt, std::vector<Body*> &bodies) // Drift every body once before resetting acceleration
+{
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		bodies[i]->position = bodies[i]->position + bodies[i]->velocity * (dt * 0.5);
+	}
+}
+
+inline void ComputeVelocityAndPosition(float dt, std::vector<Body*> &bodies, ofVec2f*& bodiesAccelerations) //Kick-Drift-Kick Leap-Frog integration scheme
+{
+	for (size_t i = 0; i < bodies.size(); i++)
+	{
+		//KDK Leap Frog
+		bodies[i]->velocity = bodies[i]->velocity + bodiesAccelerations[i] * (dt); // Kick
+		
+		bodies[i]->position = bodies[i]->position + bodies[i]->velocity * (dt * 0.5); // Drift
+	}
+}
+
+
