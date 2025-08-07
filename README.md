@@ -2,6 +2,9 @@
 Part 1 of a undergraduate directed study on the variations of the Barnes-Hut algorithm for N-body simulations. A generic 2D implementation in c++, visualized using OpenFrameworks.
 
 
+<br />
+<br />
+
 
 
 Latest Updates:
@@ -10,6 +13,48 @@ Latest Updates:
       - The plan-> go from 'get a working model' mindset   ==>   'clean the code and documentation' which is done to hopefully minimize confusion and just seems necessary if it 's ever going to be used as an educational resource.
 
 
+<br />
+<br />
+
+
+
+https://github.com/user-attachments/assets/e80f2876-66ae-4536-9ff8-328aba6bec21
+
+
+
+<br />
+<br />
+
+
+
+https://github.com/user-attachments/assets/2d87b186-3691-4ab4-a9a1-b8dce3caa7b2
+
+
+
+<br />
+<br />
+<br />
+
+
+https://github.com/user-attachments/assets/9e5a9025-6654-4f6c-804e-1369f02dc021
+
+
+
+
+<br />
+
+
+
+
+https://github.com/user-attachments/assets/3eb512a9-7c98-4df1-9710-0e45b7131f8d
+
+
+
+
+<br />
+<br />
+<br />
+<br />
 
 
 
