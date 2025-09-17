@@ -12,6 +12,10 @@ Latest Updates:
       methods) are all ready to go, but the garnishing is horrific(UI is a mess).  
       - The plan-> go from 'get a working model' mindset   ==>   'clean the code and documentation' which is done to hopefully minimize confusion and just seems necessary if it 's ever going to be used as an educational resource.
 
+<br />
+<img width="695" height="865" alt="Screenshot 2025-09-17 at 7 31 49 PM" src="https://github.com/user-attachments/assets/6d6cb0a5-3403-4b91-85a8-4d990bce3af9" />
+
+
 
 <br />
 <br />
