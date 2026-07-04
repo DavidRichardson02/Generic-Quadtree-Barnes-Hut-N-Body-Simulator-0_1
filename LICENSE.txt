@@ -1,0 +1,8 @@
+Copyright (c) 2026 David Richardson. All rights reserved.
+
+This repository and its contents are made publicly visible for portfolio,
+academic, review, and demonstration purposes only.
+
+No permission is granted to copy, modify, distribute, sublicense, publish,
+commercially exploit, or incorporate any part of this work into another
+project without prior written permission from the copyright holder.
